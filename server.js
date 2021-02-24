@@ -1,6 +1,14 @@
 let express = require('express')
+let mongodb = require('mongodb')
 
 let app = express()
+let db
+
+let connectionString = 'mongodb+srv://todoAppUser:todoklo12@cluster0.ijr3a.mongodb.net/TodoApp?retryWrites=true&w=majority'
+mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
+    db = client.db()
+    app.listen(3000)
+})
 
 app.use(express.urlencoded({extended: false}))
 
@@ -59,8 +67,8 @@ app.get('/', function(req, res) {
 })
 
 app.post('/create-item', function(req, res) {
-    console.log(req.body.item)
-    res.send("Thanks for submitting the form")
+    db.collection('items').insertOne({text: req.body.item}, function() {
+        res.send('Thanks for submitting the form');
+    })    
 })
 
-app.listen(3000)
